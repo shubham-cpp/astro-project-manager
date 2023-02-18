@@ -1,11 +1,15 @@
 ---
-import Layout from '../layouts/Layout.astro'
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import Hello from '../components/Hello.tsx';
 ---
 
 <Layout title="Welcome to Astro.">
-  <main class="container mx-auto max-w-4xl px-4 py-2">
-    <h1 class="text-center text-4xl font-bold">Kanban Board</h1>
-  </main>
+	<main>
+		<Hello client:visible/>
+	</main>
 </Layout>
 
-<style></style>
+<style>
+	
+</style>
