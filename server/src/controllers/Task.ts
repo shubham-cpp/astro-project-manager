@@ -127,3 +127,44 @@ export const deleteTask = async (req: Request, res: Response) => {
   }
 }
 // TODO get /update/ delete single task - 
+export const updateTask = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { title, daysAllocated, daysRemaining, description, type, projectId, refreshToken } = req.body;
+  try {
+    if(!refreshToken){
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: 'Bad Request. Refresh token is required.',
+      })
+    }
+    if(refreshToken){
+      const user = await User.findOne({ refreshToken });
+      if(!user) {
+        return res.status(400).json({
+          success: false,
+          data: null,
+          error: 'Bad Request. Refresh token is invalid.',
+        });
+      }
+    }
+    Task.findByIdAndUpdate(id, { title, daysAllocated, daysRemaining, description, type, projectId }, { new: true })
+      .then(
+        task => {
+          return res.json({
+            message: 'Task updated successfully',
+            success: true,
+            data: task,
+            error: null,
+          });
+        }
+      )
+  }
+  catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: err,
+    });
+  }
+}
