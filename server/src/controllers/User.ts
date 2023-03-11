@@ -352,7 +352,7 @@ const emailRequired = 'Email is required.';
 export const createUserValidationSchema = [
   body('name')
     .notEmpty()
-    .trim()
+    .trim() // TODO trim left and right
     // space should only occur once
     .matches(/^[a-zA-Z ]{2,30}$/)
     .isLength({ min: 2, max: 30 })
@@ -417,3 +417,5 @@ export const loginUserValidationSchema = [
 export const refreshTokenValidationSchema = [
   body('refreshToken').isString().withMessage('Refresh token is required.').bail(),
 ];
+
+// TODO user/task/:id all task for user owned or assigned
