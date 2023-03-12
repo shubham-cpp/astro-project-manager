@@ -3,6 +3,7 @@ import { config as loadEnvConfig } from 'dotenv';
 import Express from 'express';
 import mongoose, { connect } from 'mongoose';
 import userRouter from './src/routes/User';
+import taskRouter from './src/routes/Task';
 
 loadEnvConfig();
 
@@ -22,7 +23,7 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.get('/', (_, res) => res.send('Hello world'));
 
 app.use('/api/v1/users', userRouter);
-
+app.use('/api/v1/tasks', taskRouter);
 mongoose.set('strictQuery', true);
 connect(URI)
   .then(() => {
