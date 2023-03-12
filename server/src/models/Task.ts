@@ -1,4 +1,5 @@
 import { Schema, model, ObjectId } from 'mongoose';
+import User from './User';
 
 export type TaskTypes = 'story' | 'task' | 'epic' | 'bug';
 export type StatusTypes = 'red' | 'orange' | 'green';
@@ -38,11 +39,13 @@ const TaskSchema = new Schema<TaskType>({
     required: true,
   },
   createdBy: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    red: User,
     required: true,
   },
   currentOwner: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: User,
     required: true,
   },
   projectId: {

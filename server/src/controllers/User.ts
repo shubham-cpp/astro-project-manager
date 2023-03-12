@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import type { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import User, { UserType } from '../models/User';
+import Task from '../models/Task';
+import {ObjectId} from 'mongodb';
 
 type TokenPayload = {
   status: string;
@@ -419,3 +421,43 @@ export const refreshTokenValidationSchema = [
 ];
 
 // TODO user/task/:id all task for user owned or assigned
+
+
+export const getUserTasks = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const userId = new ObjectId(id)
+  try{
+    const {refreshToken} = req.body;
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+    console.log("decoded", decoded)
+    const user = await User.findById(decoded.id);
+    console.log("user",user);
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          data: null,
+          error: 'Refresh token is invalid.',
+        });
+      }
+    if(!user._id.equals(userId)){
+      return res.status(401).json({
+        success: false,
+        data: null,
+        error: 'Refresh token and ID param mismatch.',
+      });
+    }
+    const tasks = await Task.find({createdBy: user && userId, currentOwner: user && userId});
+    return res.json({
+      success: true,
+      data: tasks,
+      error: null,
+      length: tasks.length,
+    })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: err,
+    });
+  }
+}
