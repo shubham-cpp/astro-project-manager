@@ -13,6 +13,7 @@ import {
   tokenRefresh,
   updateUser,
   updateUserValidationSchema,
+  getUserTasks,
 } from '../controllers/User';
 import { validate } from '../util';
 
@@ -27,6 +28,6 @@ userRouter
   .get('/:id', validate(deleteUserValidationSchema), getUser)
   .put('/:id', validate(updateUserValidationSchema), updateUser)
   .patch('/:id', validate(updateUserValidationSchema), updateUser)
-  .delete('/:id', validate(deleteUserValidationSchema), deleteUser);
-
+  .delete('/:id', validate(deleteUserValidationSchema), deleteUser)
+  .get('/:id/tasks', getUserTasks);
 export default userRouter;

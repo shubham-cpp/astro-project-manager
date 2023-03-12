@@ -1,27 +1,51 @@
-import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-// import jwt from 'jsonwebtoken';
 import Task from '../models/Task';
 import User from '../models/User';
+import jwt from 'jsonwebtoken';
 
 export const getTasks = async (req: Request, res: Response) => {
-  Task.find()
-    .then(
-      tasks => {
-        return res.json({
-          success: true,
-          data: tasks,
-          error: null,
-        });
-      }
-    ).catch(err => {
+  try{
+    const tasks = await Task.find()
+    res.status(200).json(tasks)
+  }catch(err){
+    res.status(500).json(err)
+  }
+};
+
+export const getTask = async (req: Request, res: Response) => {
+  try{
+  const id = req.params.id;
+  const {refreshToken} = req.body;
+  const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as {id: string};
+  const user = await User.findById(decoded.id);
+    if(!user){
+      return res.json({
+        success: false,
+        data: null,
+        error: 'Unauthrized',
+      })
+    }
+    const task = await Task.findById(id)
+    if(!task){
+      return res.json({
+        success: false,
+        date: null,
+        error: `Task with id ${id} not found`,
+      })
+    }
+    return res.json({
+      success: true,
+      data: task,
+      error: null,
+    });
+  }catch(err){
       return res.status(500).json({
         success: false,
         data: null,
         error: err,
       });
-    });
-};
+    }
+}
 
 export const createTask = async (req: Request, res: Response) => {
   const { title, daysAllocated, daysRemaining, description, type, projectId, refreshToken} = req.body;
@@ -33,20 +57,21 @@ export const createTask = async (req: Request, res: Response) => {
         error: 'Bad Request. Refresh token is required.',
       });
     }
-    const user = await User.findOne({ refreshToken });
-    if(!user) {
-      return res.status(400).json({
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
         success: false,
         data: null,
-        error: 'Bad Request. Refresh token is invalid.',
-      });
+        error: 'Refresh token is invalid.',
+      })
     }
-    const task = await Task.findOne({ title, projectId });
-    if(task) {
+    const taskWithSameTitleInProjectExists = await Task.findOne({title: title, projectId: projectId})
+    if(taskWithSameTitleInProjectExists) {
       return res.status(400).json({
         success: false,
         data: null,
-        error: 'Bad Request. Task with this title already exists.',
+        error: 'Task with same title in project already exists.',
       })
     }
     const newTask = new Task({
@@ -58,15 +83,13 @@ export const createTask = async (req: Request, res: Response) => {
       projectId,
       createdBy: user._id,
       currentOwner: user._id,
-      refreshToken,
     })
-    await newTask.save()
-    return res.status(201).json({
+    await newTask.save();
+    return res.json({
       success: true,
       data: newTask,
       error: null,
     })
-    
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -75,7 +98,6 @@ export const createTask = async (req: Request, res: Response) => {
     });
   }
 }
-
 
 export const deleteTask = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -89,7 +111,8 @@ export const deleteTask = async (req: Request, res: Response) => {
       });
     }
     if(refreshToken){
-      const user = await User.findOne({ refreshToken });
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+      const user = await User.findById(decoded.id);
       if(!user) {
         return res.status(400).json({
           success: false,
@@ -134,7 +157,8 @@ export const updateTask = async (req: Request, res: Response) => {
       })
     }
     if(refreshToken){
-      const user = await User.findOne({ refreshToken });
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { id: string };
+      const user = await User.findById(decoded.id);
       if(!user) {
         return res.status(400).json({
           success: false,
@@ -150,7 +174,6 @@ export const updateTask = async (req: Request, res: Response) => {
       description,
       type,
       projectId,
-      refreshToken,
     })
     return res.json({
       message: 'Task updated successfully',
