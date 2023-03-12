@@ -47,7 +47,7 @@ const TaskSchema = new Schema<TaskType>({
   },
   projectId: {
     type: Number,
-    // required: true,
+    required: true,
   },
   status: {
     type: String, 

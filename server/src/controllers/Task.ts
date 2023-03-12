@@ -24,7 +24,7 @@ export const getTasks = async (req: Request, res: Response) => {
 };
 
 export const createTask = async (req: Request, res: Response) => {
-  const { title, daysAllocated, daysRemaining, description, type, project, refreshToken} = req.body;
+  const { title, daysAllocated, daysRemaining, description, type, projectId, refreshToken} = req.body;
   try{
     if(!refreshToken) {
       return res.status(400).json({
@@ -41,42 +41,30 @@ export const createTask = async (req: Request, res: Response) => {
         error: 'Bad Request. Refresh token is invalid.',
       });
     }
-    Task.findOne({ title }).then(async task => {
-      if(task){
-        return res.status(400).json({
-          success: false,
-          data: null,
-          error: 'Bad Request. Task with similar title already exists.',  
-        })
-      }
-      const newTask = new Task({
-        title,
-        daysAllocated,
-        daysRemaining,
-        description,
-        type,
-        project,
-        createdBy: user._id,
-        currentOwner: user._id,
-        refreshToken,
+    const task = await Task.findOne({ title, projectId });
+    if(task) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: 'Bad Request. Task with this title already exists.',
       })
-      newTask.save()
-        .then(
-          task => {
-            return res.json({
-              success: true,
-              data: task,
-              error: null,
-            });
-          }
-        )
-        .catch(err => {
-          return res.status(500).json({
-            success: false,
-            data: null,
-            error: err,
-          });
-        })
+    }
+    const newTask = new Task({
+      title,
+      daysAllocated,
+      daysRemaining,
+      description,
+      type,
+      projectId,
+      createdBy: user._id,
+      currentOwner: user._id,
+      refreshToken,
+    })
+    await newTask.save()
+    return res.status(201).json({
+      success: true,
+      data: newTask,
+      error: null,
     })
     
   } catch (err) {
@@ -92,6 +80,24 @@ export const createTask = async (req: Request, res: Response) => {
 export const deleteTask = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
+    const {refreshToken} = req.body;
+    if(!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: 'Bad Request. Refresh token is required.',
+      });
+    }
+    if(refreshToken){
+      const user = await User.findOne({ refreshToken });
+      if(!user) {
+        return res.status(400).json({
+          success: false,
+          data: null,
+          error: 'Bad Request. Refresh token is invalid.',
+        });
+      }
+    }
     const task = await Task.findById(id);
     if(!task) {
       return res.status(400).json({
@@ -100,24 +106,13 @@ export const deleteTask = async (req: Request, res: Response) => {
         error: 'Bad Request. Task does not exist.',
       });
     }
-    Task.findOneAndDelete({ _id: id })
-      .then(
-        task => {
-          return res.json({
-            message: 'Task deleted successfully',
-            success: true,
-            data: task,
-            error: null,
-          });
-        }
-      )
-      .catch(err => {
-        return res.status(500).json({
-          success: false,
-          data: null,
-          error: err,
-        });
-      });
+    await Task.findOneAndDelete({ _id: id })
+    return res.json({
+      message: 'Task deleted successfully',
+      success: true,
+      data: task,
+      error: null,
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -126,7 +121,7 @@ export const deleteTask = async (req: Request, res: Response) => {
     });
   }
 }
-// TODO get /update/ delete single task - 
+
 export const updateTask = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { title, daysAllocated, daysRemaining, description, type, projectId, refreshToken } = req.body;
@@ -148,17 +143,21 @@ export const updateTask = async (req: Request, res: Response) => {
         });
       }
     }
-    Task.findByIdAndUpdate(id, { title, daysAllocated, daysRemaining, description, type, projectId }, { new: true })
-      .then(
-        task => {
-          return res.json({
-            message: 'Task updated successfully',
-            success: true,
-            data: task,
-            error: null,
-          });
-        }
-      )
+    const task = await Task.findByIdAndUpdate(id, {
+      title,
+      daysAllocated,
+      daysRemaining,
+      description,
+      type,
+      projectId,
+      refreshToken,
+    })
+    return res.json({
+      message: 'Task updated successfully',
+      success: true,
+      data: task,
+      error: null,
+    })
   }
   catch (err) {
     return res.status(500).json({
