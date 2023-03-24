@@ -22,7 +22,7 @@ const TaskSchema = new Schema<TaskType>({
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 24,
+    maxLength: 100,
   },
   daysAllocated: {
     type: Date,

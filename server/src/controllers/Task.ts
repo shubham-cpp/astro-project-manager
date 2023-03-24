@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { body, param } from 'express-validator';
 import Task from '../models/Task';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
@@ -190,3 +191,47 @@ export const updateTask = async (req: Request, res: Response) => {
     });
   }
 }
+
+
+export const creaeTaskValidationSchema = [
+  body('createdBy').isMongoId().withMessage('Created by (User) is required').bail(),
+  body('title')
+    .notEmpty()
+    .matches(/^[a-zA-Z0-9 ]*$/)
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Title must be between 2 and 100 characters'),
+  body('daysAllocated').optional().isDate().withMessage('Days allocated must be a date'),
+  body('daysRemaining').optional().isDate().withMessage('Days remaining must be a date'),
+  body('description').isLength({min: 2, max: 100} ).optional().notEmpty().withMessage('Description is required'),
+  body('currentOwner').notEmpty().withMessage('Current owner is required'),
+  body('projectId').notEmpty().isAlphanumeric().withMessage('Project Id is required'),
+  body('status').optional().isIn(['red', 'orange', 'green']).withMessage('Status must be red, orange, green'),
+  body('type').isIn(['bug', 'task', 'story', 'epic']).withMessage('Type must be bug, task, story, epic'),
+]
+
+export const getTaskValidaionSchema = [
+  param('id').isMongoId().withMessage('Id is required').bail(),
+  body('refreshToken').isString().withMessage('Refresh token is required').bail(),
+]
+
+export const updateTaskValidationSchema = [
+  param('id').isMongoId().withMessage('Id is required').bail(),
+  body('refreshToken').isString().withMessage('Refresh token is required').bail(),
+  body('title')
+    .optional()
+    .matches(/^[a-zA-Z0-9 ]*$/)
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Title must be between 2 and 100 characters'),
+  body('daysAllocated').optional().isDate().withMessage('Days allocated must be a date'),
+  body('daysRemaining').optional().isDate().withMessage('Days remaining must be a date'),
+  body('description').optional().isLength({min: 2, max: 100} ).notEmpty().withMessage('Description is required'),
+  body('currentOwner').optional().isAlphanumeric().withMessage('Current owner is required'),
+  body('projectId').optional().isAlphanumeric().withMessage('Project Id is required'),
+  body('status').optional().isIn(['red', 'orange', 'green']).withMessage('Status must be red, orange, green'), 
+  body('type').optional().isIn(['bug', 'task', 'story', 'epic']).withMessage('Type must be bug, task, story, epic'),
+]
+
+export const deleteTaskValidationSchema = [
+  param('id').isMongoId().withMessage('Id is required').bail(),
+  body('refreshToken').isString().withMessage('Refresh token is required').bail(),
+]

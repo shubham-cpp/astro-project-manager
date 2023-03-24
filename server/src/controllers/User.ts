@@ -354,8 +354,7 @@ const emailRequired = 'Email is required.';
 export const createUserValidationSchema = [
   body('name')
     .notEmpty()
-    .trim() // TODO trim left and right
-    // space should only occur once
+    .trim() // Trim whitespace from name field
     .matches(/^[a-zA-Z ]{2,30}$/)
     .isLength({ min: 2, max: 30 })
     .withMessage('Name is required. And Should be between 2-24 characters.'),
@@ -461,3 +460,8 @@ export const getUserTasks = async (req: Request, res: Response) => {
     });
   }
 }
+
+export const getUserTaskValidationSchema = [
+  param('id').isMongoId().withMessage('Id is required.').bail(),
+  body('refreshToken').isString().withMessage('Refresh token is required.').bail(),
+]
