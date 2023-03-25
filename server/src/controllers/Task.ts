@@ -191,19 +191,25 @@ export const updateTask = async (req: Request, res: Response) => {
     });
   }
 }
-
+// condition for daysRemaining to be always greater than daysAllocated.
 
 export const creaeTaskValidationSchema = [
   body('createdBy').isMongoId().withMessage('Created by (User) is required').bail(),
   body('title')
     .notEmpty()
-    .matches(/^[a-zA-Z0-9 ]*$/)
+    .matches(/^[a-zA-Z]{3,}\s?[a-zA-Z0-9 ]+$/)
     .isLength({ min: 2, max: 100 })
     .withMessage('Title must be between 2 and 100 characters'),
   body('daysAllocated').optional().isDate().withMessage('Days allocated must be a date'),
-  body('daysRemaining').optional().isDate().withMessage('Days remaining must be a date'),
+  body('daysRemaining').optional().isDate().withMessage('Days remaining must be a date').custom((daysRemaining, {req}) => {
+    const daysAllocated = req.body.daysAllocated;
+    if(!daysAllocated || !daysRemaining){
+      return true // don't validate if any value is missing
+    }
+    return daysRemaining > daysAllocated;
+  }).withMessage('Days remaining must be greater than days allocated'),
   body('description').isLength({min: 2, max: 100} ).optional().notEmpty().withMessage('Description is required'),
-  body('currentOwner').notEmpty().withMessage('Current owner is required'),
+  body('currentOwner').notEmpty().isMongoId().withMessage('Current owner is required'),
   body('projectId').notEmpty().isAlphanumeric().withMessage('Project Id is required'),
   body('status').optional().isIn(['red', 'orange', 'green']).withMessage('Status must be red, orange, green'),
   body('type').isIn(['bug', 'task', 'story', 'epic']).withMessage('Type must be bug, task, story, epic'),
@@ -219,13 +225,19 @@ export const updateTaskValidationSchema = [
   body('refreshToken').isString().withMessage('Refresh token is required').bail(),
   body('title')
     .optional()
-    .matches(/^[a-zA-Z0-9 ]*$/)
+    .matches(/^[a-zA-Z]{3,}\s?[a-zA-Z0-9 ]+$/)
     .isLength({ min: 2, max: 100 })
     .withMessage('Title must be between 2 and 100 characters'),
   body('daysAllocated').optional().isDate().withMessage('Days allocated must be a date'),
-  body('daysRemaining').optional().isDate().withMessage('Days remaining must be a date'),
+  body('daysRemaining').optional().isDate().withMessage('Days remaining must be a date').custom((daysRemaining, {req}) => {
+    const daysAllocated = req.body.daysAllocated;
+    if(!daysAllocated || !daysRemaining){
+      return true // don't validate if any value is missing
+    }
+    return daysRemaining > daysAllocated;
+  }).withMessage('Days remaining must be greater than days allocated'),
   body('description').optional().isLength({min: 2, max: 100} ).notEmpty().withMessage('Description is required'),
-  body('currentOwner').optional().isAlphanumeric().withMessage('Current owner is required'),
+  body('currentOwner').optional().isMongoId().withMessage('Current owner is required'),
   body('projectId').optional().isAlphanumeric().withMessage('Project Id is required'),
   body('status').optional().isIn(['red', 'orange', 'green']).withMessage('Status must be red, orange, green'), 
   body('type').optional().isIn(['bug', 'task', 'story', 'epic']).withMessage('Type must be bug, task, story, epic'),
