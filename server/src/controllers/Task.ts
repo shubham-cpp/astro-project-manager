@@ -1,45 +1,37 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import Task from '../models/Task';
 import User from '../models/User';
+import { BadRequest, NotFound, Unauthorized } from '../utils';
 
-export const getTasks = async (_req: Request, res: Response) => {
+export const getTasks = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const tasks = await Task.find();
     res.status(200).json(tasks);
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err ?? 'Something went wrong',
-      data: null,
-    });
+    next(err);
   }
 };
 
-export const getTask = async (req: Request, res: Response) => {
+export const getTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { refreshToken } = req.body;
+    const refreshToken = req.headers['x-access-token'] as string;
+    if (!refreshToken) {
+      throw new BadRequest('Refresh token is required');
+    }
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as {
       id: string;
     };
     const user = await User.findById(decoded.id);
     if (!user) {
-      return res.json({
-        success: false,
-        data: null,
-        error: 'Unauthrized',
-      });
+      throw new Unauthorized('Token is invalid.');
     }
     const task = await Task.findById(id);
     if (!task) {
-      return res.json({
-        success: false,
-        date: null,
-        error: `Task with id ${id} not found`,
-      });
+      throw new NotFound(`Task with id ${id} not found`);
     }
     return res.json({
       success: true,
@@ -47,47 +39,30 @@ export const getTask = async (req: Request, res: Response) => {
       error: null,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      error: err,
-    });
+    next(err);
   }
 };
 
-export const createTask = async (req: Request, res: Response) => {
-  const { title, daysAllocated, daysRemaining, description, type, projectId, refreshToken } =
-    req.body;
+export const createTask = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, daysAllocated, daysRemaining, description, type, projectId } = req.body;
+  const refreshToken = req.headers['x-access-token'] as string;
   try {
     if (!refreshToken) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        // eslint-disable-next-line sonarjs/no-duplicate-string
-        error: 'Bad Request. Refresh token is required.',
-      });
+      throw new BadRequest('Refresh token is required');
     }
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as {
       id: string;
     };
     const user = await User.findById(decoded.id);
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        data: null,
-        error: 'Refresh token is invalid.',
-      });
+      throw new BadRequest('Refresh token is required');
     }
     const taskWithSameTitleInProjectExists = await Task.findOne({
       title,
       projectId,
     });
     if (taskWithSameTitleInProjectExists) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        error: 'Task with same title in project already exists.',
-      });
+      throw new BadRequest(`Task with title ${title} already exists in project ${projectId}`);
     }
     const newTask = new Task({
       title,
@@ -106,24 +81,16 @@ export const createTask = async (req: Request, res: Response) => {
       error: null,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      error: err,
-    });
+    next(err);
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.headers['x-access-token'] as string;
     if (!refreshToken) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        error: 'Bad Request. Refresh token is required.',
-      });
+      throw new BadRequest('Refresh token is required');
     }
     if (refreshToken) {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as {
@@ -131,20 +98,12 @@ export const deleteTask = async (req: Request, res: Response) => {
       };
       const user = await User.findById(decoded.id);
       if (!user) {
-        return res.status(400).json({
-          success: false,
-          data: null,
-          error: 'Bad Request. Refresh token is invalid.',
-        });
+        throw new NotFound('No User Found. Please logout and login again.');
       }
     }
     const task = await Task.findById(id);
     if (!task) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        error: 'Bad Request. Task does not exist.',
-      });
+      throw new NotFound(`Task with id ${id} not found`);
     }
     await Task.findOneAndDelete({ _id: id });
     return res.json({
@@ -154,25 +113,18 @@ export const deleteTask = async (req: Request, res: Response) => {
       error: null,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      error: err,
-    });
+    next(err);
   }
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { title, daysAllocated, daysRemaining, description, type, projectId, refreshToken } =
-    req.body;
+  const { title, daysAllocated, daysRemaining, description, type, projectId } = req.body;
+
+  const refreshToken = req.headers['x-access-token'] as string;
   try {
     if (!refreshToken) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        error: 'Bad Request. Refresh token is required.',
-      });
+      throw new BadRequest('Refresh token is required');
     }
     if (refreshToken) {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as {
@@ -180,11 +132,7 @@ export const updateTask = async (req: Request, res: Response) => {
       };
       const user = await User.findById(decoded.id);
       if (!user) {
-        return res.status(400).json({
-          success: false,
-          data: null,
-          error: 'Bad Request. Refresh token is invalid.',
-        });
+        throw new NotFound('No User Found. Please logout and login again.');
       }
     }
     const task = await Task.findByIdAndUpdate(id, {
@@ -202,15 +150,11 @@ export const updateTask = async (req: Request, res: Response) => {
       error: null,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      data: null,
-      error: err,
-    });
+    next(err);
   }
 };
-// condition for daysRemaining to be always greater than daysAllocated.
 
+// condition for daysRemaining to be always greater than daysAllocated.
 export const createTaskValidationSchema = [
   body('createdBy').isMongoId().withMessage('Created by (User) is required').bail(),
   body('title')
@@ -249,12 +193,10 @@ export const createTaskValidationSchema = [
 
 export const getTaskValidaionSchema = [
   param('id').isMongoId().withMessage('Id is required').bail(),
-  body('refreshToken').isString().withMessage('Refresh token is required').bail(),
 ];
 
 export const updateTaskValidationSchema = [
   param('id').isMongoId().withMessage('Id is required').bail(),
-  body('refreshToken').isString().withMessage('Refresh token is required').bail(),
   body('title')
     .optional()
     .matches(/^[a-zA-Z]{3,}\s?[a-zA-Z0-9 ]+$/)
@@ -292,5 +234,4 @@ export const updateTaskValidationSchema = [
 
 export const deleteTaskValidationSchema = [
   param('id').isMongoId().withMessage('Id is required').bail(),
-  body('refreshToken').isString().withMessage('Refresh token is required').bail(),
 ];

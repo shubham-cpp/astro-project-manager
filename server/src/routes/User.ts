@@ -16,7 +16,7 @@ import {
   updateUser,
   updateUserValidationSchema,
 } from '../controllers/User';
-import { validate } from '../utils';
+import { authenticateToken, validate } from '../utils';
 
 const userRouter = Router();
 
@@ -27,8 +27,8 @@ userRouter
   .post('/refresh', validate(refreshTokenValidationSchema), tokenRefresh)
   .delete('/logout', validate(refreshTokenValidationSchema), logoutUser)
   .get('/:id', validate(deleteUserValidationSchema), getUser) // this seems wrong by naming
-  .put('/:id', validate(updateUserValidationSchema), updateUser)
-  .patch('/:id', validate(updateUserValidationSchema), updateUser)
-  .delete('/:id', validate(deleteUserValidationSchema), deleteUser)
-  .get('/:id/tasks', validate(getUserTaskValidationSchema), getUserTasks);
+  .put('/:id', authenticateToken, validate(updateUserValidationSchema), updateUser)
+  .patch('/:id', authenticateToken, validate(updateUserValidationSchema), updateUser)
+  .delete('/:id', authenticateToken, validate(deleteUserValidationSchema), deleteUser)
+  .get('/:id/tasks', authenticateToken, validate(getUserTaskValidationSchema), getUserTasks);
 export default userRouter;

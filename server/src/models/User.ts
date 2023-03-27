@@ -16,7 +16,7 @@ const UserSchema = new Schema<UserType>({
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 24,
+    maxLength: 30,
   },
   email: {
     type: String,
@@ -30,13 +30,15 @@ const UserSchema = new Schema<UserType>({
   age: {
     type: Number,
     required: false,
-    min: 1,
-    max: 120,
+    default: 13,
+    min: 13,
+    max: 100,
   },
   gender: {
     type: String,
     required: false,
-    enum: ['male', 'female', 'other'],
+    default: 'unknown',
+    enum: ['male', 'female', 'other', 'unknown'],
   },
   role: {
     type: String,
