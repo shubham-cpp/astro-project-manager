@@ -12,7 +12,7 @@ export type TaskType = {
   description: string;
   createdBy: ObjectId; // user id
   currentOwner: ObjectId; // user id
-  projectId: number;
+  projectId: string;
   status: StatusTypes;
   createdOn: Date;
 };
@@ -49,8 +49,9 @@ const TaskSchema = new Schema<TaskType>({
     required: true,
   },
   projectId: {
-    type: Number,
+    type: String,
     required: true,
+    unique: true,
   },
   status: {
     type: String,

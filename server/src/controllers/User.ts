@@ -349,7 +349,7 @@ export const updateUserValidationSchema = [
     .isIn(['developer', 'admin', 'project_manager', 'client'])
     .withMessage('Role is required. And Should be admin or user.'),
 ];
-export const deleteUserValidationSchema = [
+export const userIdValidationSchema = [
   param('id').isMongoId().withMessage('Id is required.').bail(),
 ];
 

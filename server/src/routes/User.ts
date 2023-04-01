@@ -4,7 +4,7 @@ import {
   createUser,
   createUserValidationSchema,
   deleteUser,
-  deleteUserValidationSchema,
+  userIdValidationSchema,
   getUser,
   getUsers,
   getUserTasks,
@@ -26,11 +26,11 @@ userRouter
   .post('/', validate(createUserValidationSchema), createUser)
   .post('/login', validate(loginUserValidationSchema), loginUser)
   .post('/refresh', validate(refreshTokenValidationSchema), tokenRefresh)
-  .get('/:id/projects', authenticateToken, validate(deleteUserValidationSchema), getProjectsByOwner)
+  .get('/:id/projects', authenticateToken, validate(userIdValidationSchema), getProjectsByOwner)
   .delete('/logout', validate(refreshTokenValidationSchema), logoutUser)
-  .get('/:id', authenticateToken, validate(deleteUserValidationSchema), getUser) // this seems wrong by naming
+  .get('/:id', authenticateToken, validate(userIdValidationSchema), getUser) // this seems wrong by naming
   .put('/:id', authenticateToken, validate(updateUserValidationSchema), updateUser)
   .patch('/:id', authenticateToken, validate(updateUserValidationSchema), updateUser)
-  .delete('/:id', authenticateToken, validate(deleteUserValidationSchema), deleteUser)
+  .delete('/:id', authenticateToken, validate(userIdValidationSchema), deleteUser)
   .get('/:id/tasks', authenticateToken, validate(getUserTaskValidationSchema), getUserTasks);
 export default userRouter;
