@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import type { NextFunction, Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import jwt from 'jsonwebtoken';
+import Project from '../models/Project';
 import Task from '../models/Task';
 import User, { UserType } from '../models/User';
 import { BadRequest, NotFound, Unauthorized } from '../utils';
@@ -127,14 +128,20 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   try {
-    if (!id) {
-      throw new BadRequest('Bad Request. Id is required.');
-    }
+    if (!id) throw new BadRequest('Bad Request. Id is required.');
+
     const user = await User.findById(id);
-    if (!user) {
-      throw new NotFound('User not found. Cannot perform delete');
-    }
+    if (!user) throw new NotFound('User not found. Cannot perform delete');
+
+    const tasks = await Task.findOne({ currentOwner: user._id });
+    if (tasks) throw new BadRequest('User cannot be deleted since User currently owns task(s).');
+
+    const project = await Project.findOne({ projectOwner: user._id });
+    if (project)
+      throw new BadRequest('User cannot be deleted since User currently owns project(s).');
+
     await user.remove();
+    await Project.findOneAndUpdate({ members: { $in: [id] } }, { $pull: { members: id } });
     return res.json({
       success: true,
       data: `User with id ${id} has been deleted.`,

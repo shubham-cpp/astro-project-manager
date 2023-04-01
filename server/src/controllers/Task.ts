@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import Project from '../models/Project';
-import Task from '../models/Task';
+import Task, { TaskType } from '../models/Task';
 import User from '../models/User';
 import { BadRequest, NotFound, Unauthorized } from '../utils';
 
@@ -114,20 +114,15 @@ export const deleteTask = async (req: Request, res: Response, next: NextFunction
     if (!task) {
       throw new NotFound(`Task with id ${id} not found`);
     }
-    await Project.findOneAndUpdate(
-      { projectId: task.projectId },
-      {
-        $pull: {
-          tasks: task._id,
-        },
-      },
-    );
-    await Task.findOneAndDelete({ _id: id });
+    const { projectId } = task;
+
+    await task.remove();
+    await Project.findOneAndUpdate({ projectId }, { $pull: { tasks: id } });
+
     return res.json({
-      message: 'Task deleted successfully',
       success: true,
       data: task,
-      error: null,
+      message: 'Task deleted successfully',
     });
   } catch (err) {
     next(err);
@@ -136,7 +131,8 @@ export const deleteTask = async (req: Request, res: Response, next: NextFunction
 
 export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { title, daysAllocated, daysRemaining, description, type, projectId } = req.body;
+  const { title, daysAllocated, daysRemaining, description, type, projectId } =
+    req.body as TaskType;
 
   const refreshToken = req.headers['x-access-token'] as string;
   try {
@@ -152,19 +148,23 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
         throw new NotFound('No User Found. Please logout and login again.');
       }
     }
-    const task = await Task.findByIdAndUpdate(id, {
-      title,
-      daysAllocated,
-      daysRemaining,
-      description,
-      type,
-      projectId,
-    });
+    const task = await Task.findById(id);
+
+    if (!task) throw new NotFound(`Task with id ${id} not found`);
+
+    if (title.trim().length) task.title = title.trim();
+    if (description.trim().length) task.description = description.trim();
+    if (daysAllocated) task.daysAllocated = daysAllocated;
+    if (daysRemaining) task.daysRemaining = daysRemaining;
+    if (type) task.type = type;
+    if (projectId) task.projectId = projectId;
+
+    await task.save();
+
     return res.json({
-      message: 'Task updated successfully',
       success: true,
       data: task,
-      error: null,
+      message: 'Task updated successfully',
     });
   } catch (err) {
     next(err);
