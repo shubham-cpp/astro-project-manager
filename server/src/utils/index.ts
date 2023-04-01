@@ -92,15 +92,16 @@ class GeneralError extends Error {
     return 500;
   }
 }
-export class BadRequest extends GeneralError { }
-export class NotFound extends GeneralError { }
-export class Unauthorized extends GeneralError { }
-export class Forbidden extends GeneralError { }
+export class BadRequest extends GeneralError {}
+export class NotFound extends GeneralError {}
+export class Unauthorized extends GeneralError {}
+export class Forbidden extends GeneralError {}
 
 export const errorMiddleware = (
   err: GeneralError | Error,
-  req: Request,
+  _: Request,
   res: Response,
+  // eslint-disable-next-line no-unused-vars
   next: NextFunction,
 ) => {
   // console.log(err);
@@ -116,4 +117,12 @@ export const errorMiddleware = (
     data: null,
     message: err.name === 'JsonWebTokenError' ? 'Unauthorized Access' : err.message,
   });
+};
+
+export const compareArrays = <TArray>(arr1: TArray[], arr2: TArray[]) => {
+  if (arr1.length !== arr2.length) return false;
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return false;
+  }
+  return true;
 };
