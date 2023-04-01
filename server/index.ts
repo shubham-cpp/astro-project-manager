@@ -2,8 +2,10 @@ import cors from 'cors';
 import { config as loadEnvConfig } from 'dotenv';
 import Express from 'express';
 import mongoose, { connect } from 'mongoose';
-import userRouter from './src/routes/User';
 import taskRouter from './src/routes/Task';
+import userRouter from './src/routes/User';
+import { errorMiddleware } from './src/utils';
+// import { errorMiddleware } from './src/utils';
 
 loadEnvConfig();
 
@@ -24,10 +26,12 @@ app.get('/', (_, res) => res.send('Hello world'));
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tasks', taskRouter);
+
 mongoose.set('strictQuery', true);
 connect(URI)
   .then(() => {
     console.log('Connected to MongoDB');
+    app.use(errorMiddleware);
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

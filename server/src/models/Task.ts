@@ -12,11 +12,11 @@ export type TaskType = {
   description: string;
   createdBy: ObjectId; // user id
   currentOwner: ObjectId; // user id
-  projectId:number;
+  projectId: string;
   status: StatusTypes;
   createdOn: Date;
 };
- 
+
 const TaskSchema = new Schema<TaskType>({
   title: {
     type: String,
@@ -28,10 +28,10 @@ const TaskSchema = new Schema<TaskType>({
     type: Date,
     // required: true,
   },
-  daysRemaining : {
+  daysRemaining: {
     type: Date,
     // required: true,
-  },  
+  },
   description: {
     type: String,
     minLength: 2,
@@ -49,11 +49,12 @@ const TaskSchema = new Schema<TaskType>({
     required: true,
   },
   projectId: {
-    type: Number,
+    type: String,
     required: true,
+    unique: true,
   },
   status: {
-    type: String, 
+    type: String,
     // required: true,
     default: 'green',
     enum: ['red', 'orange', 'green'],
@@ -67,8 +68,8 @@ const TaskSchema = new Schema<TaskType>({
   createdOn: {
     type: Date,
     default: Date.now,
-  }
-})
+  },
+});
 
 const Task = model<TaskType>('task', TaskSchema);
 export default Task;
