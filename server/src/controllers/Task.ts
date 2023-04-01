@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import jwt from 'jsonwebtoken';
+import Project from '../models/Project';
 import Task from '../models/Task';
 import User from '../models/User';
 import { BadRequest, NotFound, Unauthorized } from '../utils';
@@ -75,6 +76,14 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
       currentOwner: user._id,
     });
     await newTask.save();
+    await Project.findOneAndUpdate(
+      { projectId },
+      {
+        $push: {
+          tasks: newTask._id,
+        },
+      },
+    );
     return res.json({
       success: true,
       data: newTask,
@@ -105,6 +114,14 @@ export const deleteTask = async (req: Request, res: Response, next: NextFunction
     if (!task) {
       throw new NotFound(`Task with id ${id} not found`);
     }
+    await Project.findOneAndUpdate(
+      { projectId: task.projectId },
+      {
+        $pull: {
+          tasks: task._id,
+        },
+      },
+    );
     await Task.findOneAndDelete({ _id: id });
     return res.json({
       message: 'Task deleted successfully',
