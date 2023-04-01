@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getProjectsByOwner } from '../controllers/Project';
 import {
   createUser,
   createUserValidationSchema,
@@ -25,8 +26,9 @@ userRouter
   .post('/', validate(createUserValidationSchema), createUser)
   .post('/login', validate(loginUserValidationSchema), loginUser)
   .post('/refresh', validate(refreshTokenValidationSchema), tokenRefresh)
+  .get('/:id/projects', authenticateToken, validate(deleteUserValidationSchema), getProjectsByOwner)
   .delete('/logout', validate(refreshTokenValidationSchema), logoutUser)
-  .get('/:id', validate(deleteUserValidationSchema), getUser) // this seems wrong by naming
+  .get('/:id', authenticateToken, validate(deleteUserValidationSchema), getUser) // this seems wrong by naming
   .put('/:id', authenticateToken, validate(updateUserValidationSchema), updateUser)
   .patch('/:id', authenticateToken, validate(updateUserValidationSchema), updateUser)
   .delete('/:id', authenticateToken, validate(deleteUserValidationSchema), deleteUser)
