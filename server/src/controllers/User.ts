@@ -5,7 +5,7 @@ import { body, param } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import Project from '../models/Project';
 import Task from '../models/Task';
-import User, { UserType } from '../models/User';
+import User, { genders, userRoles, UserType } from '../models/User';
 import { BadRequest, NotFound, Unauthorized } from '../utils';
 
 type TokenPayload = {
@@ -315,11 +315,11 @@ export const createUserValidationSchema = [
     .withMessage('Age is required. And Should be a number. Minimum 13 and maximum 120.'),
   body('gender')
     .optional()
-    .isIn(['male', 'female', 'other'])
+    .isIn(genders)
     .withMessage('Gender is required. And Should be male or female or other.'),
   body('role')
     .optional()
-    .isIn(['developer', 'admin', 'project_manager', 'client'])
+    .isIn(userRoles)
     .withMessage('Role is required. And Should be admin or user.'),
 ];
 
@@ -342,11 +342,11 @@ export const updateUserValidationSchema = [
     .withMessage('Age is required. And Should be a number.'),
   body('gender')
     .optional()
-    .isIn(['male', 'female', 'other'])
+    .isIn(genders)
     .withMessage('Gender is required. And Should be male or female or other.'),
   body('role')
     .optional()
-    .isIn(['developer', 'admin', 'project_manager', 'client'])
+    .isIn(userRoles)
     .withMessage('Role is required. And Should be admin or user.'),
 ];
 export const userIdValidationSchema = [
