@@ -12,6 +12,7 @@ export const Tabs: Component<TabsProps> = props => {
   const [activeIndex, setActiveIndex] = createSignal(0)
   const handleTabClick = (index: number) => setActiveIndex(index)
   const resolvedChildren = children(() => props.children)
+
   return (
     <div class="tabs">
       <div role="tablist" aria-label={props.title}>
@@ -24,6 +25,10 @@ export const Tabs: Component<TabsProps> = props => {
               id={`tab-${index()}`}
               tabindex={activeIndex() === index() ? 0 : -1}
               onClick={() => handleTabClick(index())}
+              class={`${activeIndex() === index()
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-gray-500 hover:text-gray-800'
+                } rounded-md py-2 px-4 font-medium focus:outline-none`}
             >
               {child.title ?? 'Undefined'}
               <p>{JSON.stringify(child.label, null, 2)}</p>
@@ -33,7 +38,7 @@ export const Tabs: Component<TabsProps> = props => {
       </div>
       <For each={props.children}>
         {(child, index) => (
-          <div
+          <section
             id={`panel-${index()}`}
             role="tabpanel"
             tabindex={activeIndex() === index() ? 0 : -1}
@@ -41,7 +46,7 @@ export const Tabs: Component<TabsProps> = props => {
             hidden={activeIndex() !== index()}
           >
             {child?.children ?? null}
-          </div>
+          </section>
         )}
       </For>
     </div>
