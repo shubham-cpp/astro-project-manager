@@ -1,7 +1,10 @@
 import { Schema, model } from 'mongoose';
 
-export type Gender = 'male' | 'female' | 'other';
-export type UserRole = 'developer' | 'admin' | 'project_manager' | 'client';
+export const genders = ['male', 'female', 'other'] as const;
+export const userRoles = ['developer', 'admin', 'project_manager', 'client'] as const;
+
+export type Gender = (typeof genders)[number];
+export type UserRole = (typeof userRoles)[number];
 
 export type UserType = {
   name: string;

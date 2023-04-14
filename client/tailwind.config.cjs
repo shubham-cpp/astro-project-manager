@@ -10,7 +10,16 @@ module.exports = {
       serif: ['Noto Serif', ...defaultTheme.fontFamily.sans],
       mono: ['Fira Code', ...defaultTheme.fontFamily.sans],
     },
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#0070f3',
+        'primary-light': '#60a5fa',
+        'primary-dark': '#1d4ed8',
+        secondary: '#25d9cc',
+        'secondary-dark': '#06C689',
+        'secondary-light': '#61FACA',
+      },
+    },
   },
   corePlugins: {
     aspectRatio: false,

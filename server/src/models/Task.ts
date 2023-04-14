@@ -1,8 +1,11 @@
 import { Schema, model, ObjectId } from 'mongoose';
 import User from './User';
 
-export type TaskTypes = 'story' | 'task' | 'epic' | 'bug';
-export type StatusTypes = 'red' | 'orange' | 'green';
+export const taskTypes = ['story', 'task', 'epic', 'bug'] as const;
+export const statusTypes = ['red', 'orange', 'green'] as const;
+
+export type TaskTypes = (typeof taskTypes)[number]; // story | task | epic | wished
+export type StatusTypes = (typeof statusTypes)[number];
 
 export type TaskType = {
   title: string;
