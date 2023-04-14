@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import Project from '../models/Project';
-import Task, { TaskType } from '../models/Task';
+import Task, { statusTypes, TaskType, taskTypes } from '../models/Task';
 import User from '../models/User';
 import { BadRequest, NotFound, Unauthorized } from '../utils';
 
@@ -201,11 +201,11 @@ export const createTaskValidationSchema = [
   body('projectId').notEmpty().isAlphanumeric().withMessage('Project Id is required'),
   body('status')
     .optional()
-    .isIn(['red', 'orange', 'green'])
-    .withMessage('Status must be red, orange, green'),
+    .isIn(statusTypes)
+    .withMessage(`Status must be ${statusTypes.join(', ')}`),
   body('type')
-    .isIn(['bug', 'task', 'story', 'epic'])
-    .withMessage('Type must be bug, task, story, epic'),
+    .isIn(taskTypes)
+    .withMessage(`Type must be ${taskTypes.join(', ')}`),
 ];
 
 export const getTaskValidaionSchema = [
@@ -241,12 +241,12 @@ export const updateTaskValidationSchema = [
   body('projectId').optional().isAlphanumeric().withMessage('Project Id is required'),
   body('status')
     .optional()
-    .isIn(['red', 'orange', 'green'])
-    .withMessage('Status must be red, orange, green'),
+    .isIn(statusTypes)
+    .withMessage(`Status must be ${statusTypes.join(', ')}`),
   body('type')
     .optional()
-    .isIn(['bug', 'task', 'story', 'epic'])
-    .withMessage('Type must be bug, task, story, epic'),
+    .isIn(taskTypes)
+    .withMessage(`Type must be ${taskTypes.join(', ')}`),
 ];
 
 export const deleteTaskValidationSchema = [

@@ -4,7 +4,7 @@ import User from './User';
 export const taskTypes = ['story', 'task', 'epic', 'bug'] as const;
 export const statusTypes = ['red', 'orange', 'green'] as const;
 
-export type TaskTypes = (typeof taskTypes)[number];
+export type TaskTypes = (typeof taskTypes)[number]; // story | task | epic | wished
 export type StatusTypes = (typeof statusTypes)[number];
 
 export type TaskType = {
