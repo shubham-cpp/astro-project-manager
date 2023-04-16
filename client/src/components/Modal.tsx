@@ -1,12 +1,12 @@
 import { Component, JSXElement, Show, createSignal } from 'solid-js'
-import { PrimaryButton } from './Buttons'
+import { PrimaryButton, SecondaryButton } from './Buttons'
 
 interface ModalProps{
   buttonTitle?: string
   title?: string
   action?: string
-  cancel: string
-  actionOnClick: () => void
+  cancel?: string
+  actionOnClick?: () => void
   children?: JSXElement
 }
 
@@ -25,9 +25,9 @@ const Modal: Component<ModalProps> = props => {
         <div class="modal-body">
           {props.children}
         </div>
-        <div class="modal-actions">
-          {props.action && <PrimaryButton label={props.action || 'Undefined'} onClick={props.actionOnClick}/>}
-          {props.cancel && <PrimaryButton label={props.cancel || 'Undefined'} onClick={props.actionOnClick}/>}
+        <div class="modal-actions flex gap-1 pt-2">
+          {props.action && <PrimaryButton label={props.action} onClick={() => props.actionOnClick}/>}
+          {props.cancel && <SecondaryButton label={props.cancel} onClick={() => setShow(false)}/>}
         </div>
       </div>
     </div> 
