@@ -1,7 +1,7 @@
 import type { Component } from "solid-js";
 import { Tab, Tabs } from "./Tab";
 import Modal from "./Modal";
-
+// let this one be here for testing now
 export const TestComponent: Component<any> = () => {
   return(
     <Modal title="Modal Title" buttonTitle="Modal Test" action="Submit" cancel="close">

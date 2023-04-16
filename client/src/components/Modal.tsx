@@ -16,7 +16,7 @@ const Modal: Component<ModalProps> = props => {
   return (
     <Show when={show()} fallback={<PrimaryButton label={props.buttonTitle || 'Undefined'} onClick={() => setShow(true)}/>}>
     <div class="modal-wrapper bg-slate-900 bg-opacity-70 z-50 fixed h-screen w-screen top-0 left-0 flex justify-center items-center">
-      <div  role="alertdialog" aria-modal="true" aria-labelledby={`modal-${props.title}` } 
+      <div role="alertdialog" aria-modal="true" aria-labelledby={`modal-${props.title}`} 
             class="modal align-super bg-white w-3/4 min-h-0 max-h-3/4 rounded-sm bg-opacity-100 shadow-lg overflow-y-auto p-10">
         <div class="modal-header flex align-super justify-between pb-2">
           <h1 class="text-lg">{props.title}</h1>
