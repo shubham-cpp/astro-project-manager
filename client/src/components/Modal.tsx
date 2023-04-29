@@ -8,31 +8,41 @@ interface ModalProps{
   cancel?: string
   actionOnClick?: () => void
   children?: JSXElement
+  large?: boolean
+  medium?: boolean
 }
 
 const Modal: Component<ModalProps> = props => {
   const [show, setShow] = createSignal(false)
 
   return (
-    <Show when={show()} fallback={<Button label={props.buttonTitle || 'Undefined'} onClick={() => setShow(true)}/>}>
-    <dialog class="modal-wrapper bg-slate-900 bg-opacity-70 z-50 fixed h-screen w-screen top-0 left-0 flex justify-center items-center">
-      <div role="alertdialog" aria-modal="true" aria-labelledby={`modal-${props.title}`} 
-            class="modal align-super bg-white w-3/4 min-h-0 max-h-3/4 rounded-sm bg-opacity-100 shadow-lg overflow-y-auto p-10">
-        <div class="modal-header flex align-super justify-between pb-2">
-          <h1 class="text-lg">{props.title}</h1>
-          <button onClick={() => setShow(false)}>
-            <span class="material-symbols-outlined">close</span>
-          </button>          </div>
-        <div class="modal-body">
-          {props.children}
-        </div>
-        <div class="modal-actions flex gap-1 pt-2">
-          {props.action && <Button label={props.action} onClick={() => props.actionOnClick}/>}
-          {props.cancel && <Button variant='secondary' label={props.cancel} onClick={() => setShow(false)}/>}
-        </div>
+    <>
+    <Button onClick={() => setShow(true)}><h1>{props.buttonTitle}</h1></Button>
+    {show() && ( 
+    <dialog open class="inset-0 z-10 overflow-y-auto">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+          <div class={`${props.large ? 'max-w-4xl' : props.medium ? 'max-w-2xl' : 'max-w-md' } "absolute bg-white rounded-lg p-8 w-full`}>
+            
+            <div class="modal-header flex items-center justify-between pb-2">
+              <h1 class="modal-title font-bold text-lg align-sub">{props.title}</h1>
+              
+              <button onClick={() => setShow(false)}>
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            {props.children}
+
+            <div class='modal-actions pt-2 flex gap-2'>
+              {props.action && <Button onClick={() => props.actionOnClick && props.actionOnClick()}><h1>{props.action}</h1></Button>}
+              {props.cancel && <Button variant='secondary' onClick={() => setShow(false)}><h1>{props.cancel}</h1></Button>}
+            </div>
+          
+          </div>
       </div>
-    </dialog> 
-    </Show>   
+    </dialog>)
+    }
+    </>   
   )
 }
 
