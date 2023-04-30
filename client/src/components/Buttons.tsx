@@ -7,7 +7,6 @@ export const Button: Component<{
   variant?: "primary" | "secondary"
   type?: "button" | "submit" | "reset"
   role?: JSX.AriaAttributes["role"]
-  tabindex: number
 }> = (props) => {
   return (
     <button
