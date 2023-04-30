@@ -1,6 +1,7 @@
 import type { Component } from "solid-js";
 import { Tab, Tabs } from "./Tab";
 import Modal from "./Modal";
+import SelectInput from "./Inputs/SelectInput";
 // let this one be here for testing now
 export const TestComponent: Component<any> = () => {
   return(
@@ -15,6 +16,7 @@ export const TestComponent: Component<any> = () => {
         </Tab>
       </Tabs>
       </div>
+      <SelectInput label="Choose One" options={["Option 1", "Option 2", "Option 3"]} onChange={(value) => console.log(value)}/>
     </Modal>
   )
 }
