@@ -15,12 +15,14 @@ const SelectInput: Component<SelectInuputProps> = props => {
 
   return (
   <label aria-label={`${props.label}-select-label`}>{props.label}
-    <select name="choice" class="appearance-none bg-gray-200 text-gray-700 border border-gray-300 rounded-lg w-64 py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 p-4 mx-2" 
+    <select name="choice" class="bg-gray-200 text-gray-700 border border-gray-300 rounded-lg w-64 py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 p-4 mx-2" 
             onChange={handleOptionChange}
     >
       <For each={props.options}>
         {(option, index) => (
-          <option value={option} id={`${index}-${option}`} class="py-2 px-4">{option}</option>
+          <option value={option} id={`${index}-${option}`}>
+            {option}
+          </option>
         )}
       </For>
     </select>
