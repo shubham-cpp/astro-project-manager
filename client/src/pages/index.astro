@@ -1,16 +1,158 @@
 ---
-import { TestComponent } from '../components/TestComponent';
 import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout title="Welcome to Astro.">
   <main class="container mx-auto max-w-4xl px-4 py-2">
     <h1 class="text-center text-4xl font-bold">Kanban Board</h1>
-    <TestComponent client:load/>
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, esse voluptatum eum, aspernatur illum quos ducimus incidunt minima corrupti ad eligendi illo vero, quia temporibus ea. Nam consequuntur ipsum facere at mollitia, hic, doloremque quae blanditiis voluptatum corrupti laboriosam laborum repellat, quod necessitatibus incidunt dolores odit. Debitis hic ea id adipisci quia libero officia odio illum ducimus porro voluptatem, repellendus similique rerum mollitia dolor. Consectetur illo rerum ratione culpa nobis voluptate dolorum dolorem alias placeat consequatur cupiditate qui sed, perferendis molestiae eos incidunt, vel accusamus fuga! Incidunt nemo in esse quaerat ab libero architecto dicta id, odio totam veniam placeat dolor eos sunt vel expedita tempore fugit similique! Ut mollitia odio rem id. Quibusdam atque nam quo iste ducimus beatae commodi consectetur quos perspiciatis officiis veritatis similique cum debitis, ratione, tenetur laborum tempora suscipit. Fugiat deserunt officia fuga odio quis odit quod placeat ut quam. Corrupti earum, quo illum possimus nam reprehenderit? Laborum nisi dicta corporis cum error quos porro incidunt aut magnam nulla eligendi eos voluptatum nemo quia molestias corrupti possimus exercitationem beatae commodi quasi, fugit voluptates. Est alias autem recusandae praesentium. Ut, sequi amet deleniti minus provident, officiis atque eligendi tempora ipsum, aliquam vero fuga. Porro vitae sequi praesentium numquam ducimus earum dolore aut, beatae omnis quidem, libero nam tenetur mollitia nostrum minima. Amet eligendi molestias consequuntur recusandae dolorem iure fugiat quidem quasi atque aliquid autem porro, eum aperiam reiciendis accusamus? Quam aut tempora nemo maxime dolores, deserunt harum suscipit sint, dicta odit non tenetur dolorum ullam, dolorem ipsa hic inventore fugiat libero dolore voluptatibus. Sunt mollitia nemo doloremque. Autem odio obcaecati totam voluptatibus corrupti repudiandae sit, illum a nostrum doloremque. Error corrupti, harum similique architecto deleniti sapiente quam nulla quae omnis illo perferendis dolorum blanditiis fuga optio ab expedita temporibus, iusto quisquam eaque? Reiciendis repellat tempora ea eaque iusto sapiente excepturi hic maxime ex assumenda similique perspiciatis facilis aspernatur, adipisci minus amet fugiat sint voluptas quaerat corporis at itaque illo quod? Esse, ipsa rem totam doloribus voluptas cupiditate laudantium ipsum unde, id adipisci labore quos officia, temporibus eum? Necessitatibus alias earum velit expedita quae suscipit neque consectetur beatae dolor quos doloribus sapiente, aliquid eveniet eius magni quaerat perspiciatis dolores officia adipisci ratione tenetur illum? Officiis nobis voluptas commodi iste nostrum nulla voluptatum! Nemo vitae odit temporibus autem quaerat nesciunt. Laboriosam cumque fugiat quaerat nostrum recusandae id iste dignissimos suscipit ut saepe, quae iusto repellendus laborum facilis sit eos itaque ipsam adipisci dicta labore dolor nemo tenetur nulla optio? Enim reiciendis exercitationem, sapiente illum pariatur totam provident quidem molestias culpa dignissimos soluta, fuga beatae, esse quisquam cumque fugit? Quaerat nobis culpa assumenda nostrum, facere nam minus velit perferendis voluptatibus vitae dignissimos, excepturi magni impedit laudantium. Quam, veniam, velit soluta enim ratione dignissimos saepe ipsum repellat eos incidunt dicta consectetur? Quia perferendis nesciunt quos, saepe quod facilis voluptas voluptatum iste, nam cupiditate officia ab fugit asperiores dolor neque provident minus deleniti repellat eveniet. Voluptatibus similique unde praesentium numquam totam ex? Ad magnam inventore animi iure? Distinctio possimus dicta recusandae!
-    </p>
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+      <ul
+        class="-mb-px flex flex-wrap text-center text-sm font-medium"
+        id="myTab"
+        data-tabs-toggle="#myTabContent"
+        role="tablist"
+      >
+        <li class="mr-2" role="presentation">
+          <button
+            class="inline-block rounded-t-lg border-b-2 p-4"
+            id="profile-tab"
+            data-tabs-target="#profile"
+            type="button"
+            role="tab"
+            aria-controls="profile"
+            aria-selected="true">Profile</button
+          >
+        </li>
+        <li class="mr-2" role="presentation">
+          <button
+            class="inline-block rounded-t-lg border-b-2 border-transparent p-4 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+            id="dashboard-tab"
+            data-tabs-target="#dashboard"
+            type="button"
+            role="tab"
+            aria-controls="dashboard"
+            aria-selected="false">Dashboard</button
+          >
+        </li>
+        <li class="mr-2" role="presentation">
+          <button
+            class="inline-block rounded-t-lg border-b-2 border-transparent p-4 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+            id="settings-tab"
+            data-tabs-target="#settings"
+            type="button"
+            role="tab"
+            aria-controls="settings"
+            aria-selected="false">Settings</button
+          >
+        </li>
+        <li role="presentation">
+          <button
+            class="inline-block rounded-t-lg border-b-2 border-transparent p-4 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+            id="contacts-tab"
+            data-tabs-target="#contacts"
+            type="button"
+            role="tab"
+            aria-controls="contacts"
+            aria-selected="false">Contacts</button
+          >
+        </li>
+      </ul>
+    </div>
+    <div id="myTabContent">
+      <div
+        class="rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+        id="profile"
+        role="tabpanel"
+        aria-labelledby="profile-tab"
+      >
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This is some placeholder content the <strong
+            class="font-medium text-gray-800 dark:text-white"
+            >Profile tab's associated content</strong
+          >. Clicking another tab will toggle the visibility of this one for the
+          next. The tab JavaScript swaps classes to control the content
+          visibility and styling.
+        </p>
+      </div>
+      <div
+        class="hidden rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+        id="dashboard"
+        role="tabpanel"
+        aria-labelledby="dashboard-tab"
+      >
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This is some placeholder content the <strong
+            class="font-medium text-gray-800 dark:text-white"
+            >Dashboard tab's associated content</strong
+          >. Clicking another tab will toggle the visibility of this one for the
+          next. The tab JavaScript swaps classes to control the content
+          visibility and styling.
+        </p>
+      </div>
+      <div
+        class="hidden rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+        id="settings"
+        role="tabpanel"
+        aria-labelledby="settings-tab"
+      >
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This is some placeholder content the <strong
+            class="font-medium text-gray-800 dark:text-white"
+            >Settings tab's associated content</strong
+          >. Clicking another tab will toggle the visibility of this one for the
+          next. The tab JavaScript swaps classes to control the content
+          visibility and styling.
+        </p>
+      </div>
+      <div
+        class="hidden rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+        id="contacts"
+        role="tabpanel"
+        aria-labelledby="contacts-tab"
+      >
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This is some placeholder content the <strong
+            class="font-medium text-gray-800 dark:text-white"
+            >Contacts tab's associated content</strong
+          >. Clicking another tab will toggle the visibility of this one for the
+          next. The tab JavaScript swaps classes to control the content
+          visibility and styling.
+        </p>
+      </div>
+    </div>
+    <script>
+      document
+        .querySelectorAll('button[role=tab][type=button]')
+        .forEach(tabButton => {
+          tabButton.addEventListener('click', e => {
+            const target = e.target // current button tag
+            const parent = target.parentNode.parentNode // ul tag
+            const grandparent = parent.parentNode.parentNode // div tag
+            parent
+              .querySelectorAll('[aria-selected="true"]')
+              .forEach(t => t.setAttribute('aria-selected', false))
+            target?.setAttribute('aria-selected', true)
+            grandparent.querySelectorAll('[role="tabpanel"]').forEach(p => {
+              p.classList.add('hidden')
+              p.setAttribute('hidden', true)
+              p.setAttribute('aria-hidden', true)
+            })
+            const tabContent = grandparent.querySelector(
+              `#${target?.getAttribute('aria-controls')}`
+            )
+            console.log(tabContent)
+            tabContent.classList.remove('hidden')
+            tabContent.removeAttribute('hidden')
+            tabContent.removeAttribute('aria-hidden')
+          })
+        })
+    </script>
   </main>
 </Layout>
 
-<style></style>
+<style>
+  button[aria-selected='true'] {
+    @apply bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500;
+    font-weight: 600;
+  }
+</style>
